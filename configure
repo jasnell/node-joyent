@@ -962,6 +962,7 @@ def configure_intl(o):
     'genccode': 'tools/genccode',
     'genrb': 'tools/genrb',
     'icupkg': 'tools/icupkg',
+    'pkgdata': 'tools/pkgdata'
   }
   # this creates a variable icu_src_XXX for each of the subdirs
   # with a list of the src files to use
