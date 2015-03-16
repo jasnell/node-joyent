@@ -22,9 +22,15 @@
 #ifndef L10N__H
 #define L10N__H
 
-#include "l10n_version.h"
 #include <stdint.h>
-#include <stdio.h>
+
+#define L10N_VERSION_MAJOR 0
+#define L10N_VERSION_MINOR 0
+#define L10N_VERSION_PATCH 1
+#define L10N_VERSION ((L10N_VERSION_MAJOR<<16)|\
+                       (L10N_VERSION_MINOR<<8)|\
+                       (L10N_VERSION_PATCH))
+#define L10N_VERSION_STR "0.0.1-DEV"
 
 #ifdef _WIN32
 # define L10N_EXTERN /* nothing */
@@ -41,6 +47,11 @@
 L10N_EXTERN bool l10n_initialize(const char * locale);
 
 /**
+ * Preflight to get the minimum buffer allocation size we need.
+ **/
+L10N_EXTERN int32_t l10n_preflight(const char * key);
+
+/**
  * Fetch the value for the specified key. Returns a pointer to dest.
  **/
 L10N_EXTERN const char * l10n_fetch(const char * key,
@@ -49,56 +60,15 @@ L10N_EXTERN const char * l10n_fetch(const char * key,
                                     int32_t *len);
 
 /**
- * Fetch the value for the specified key then do a u_sprintf with the
- * provided varargs... return the resulting string
- **/
-L10N_EXTERN const char * l10n_sprintf(const char * key,
-                                      const char * fallback,
-                                      char * dest,
-                                      int32_t *len,
-                                      ...);
-
-/**
- * Lookup the key, return the value. Doesn't get much easier. fallback
- * is ignored here. Uses a maximum buffer size of 200. If you need to
- * specify an alternative buffer size, use the L10Nn variant
+ * Lookup the key, return the value. Doesn't get much easier. If the key
+ * is not found in the bundle, fallback is returned instead.
  **/
 #define L10N(key, fallback) ({                                          \
-  char buffer[200];                                                     \
-  int32_t len = sizeof(buffer);                                         \
-  const char * res = l10n_fetch(key, fallback, buffer, &len);           \
-  res; })
-
-/**
- * Lookup the key, return the value. fallback is ignored. Uses a supplied
- * maximum buffer size. example: L10Nn("foo", "ignored", 100)
- **/
-#define L10Nn(key, fallback, len) ({                                    \
-  char buffer[len];                                                     \
-  int32_t len = sizeof(buffer);                                         \
-  const char * res = l10n_fetch(key, fallback, buffer, &len);           \
-  res; })
-
-/**
- * Lookup the key, use the value as the pattern for a sprintf. Uses a
- * maximum buffer size of 200. If you need to specify an alternative buffer
- * size, use the L10Nfn variant
- **/
-#define L10Nf(key, fallback, ...) ({                                          \
-  char buffer[200];                                                           \
-  int32_t blen = sizeof(buffer);                                              \
-  const char * res = l10n_sprintf(key, fallback, buffer, &blen, __VA_ARGS__); \
-  res;                                                                        \
-})
-
-/**
- * Lookup the key, use the value as the pattern for a sprintf. Uses a
- * supplied maximum buffer size. example: L10Nn("foo", "ignored", 100, "a", 1)
- **/
-#define L10Nfn(key, fallback, len, ...) ({                                    \
-  char buffer[len];                                                           \
-  int32_t blen = sizeof(buffer);                                              \
-  const char * res = l10n_sprintf(key, fallback, buffer, &blen, __VA_ARGS__); \
+  char * dest;                                                          \
+  int32_t keylen = l10n_preflight(key);                                 \
+  dest = new char[keylen+1];                                            \
+  const char * res = l10n_fetch(key, fallback, dest, &keylen);          \
+  delete[] dest;                                                        \
   res; })
 
 #endif // L10N__H

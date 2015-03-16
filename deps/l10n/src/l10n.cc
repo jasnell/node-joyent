@@ -19,16 +19,10 @@
 // OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
 // USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-#include "l10n.h"
-
 #include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <stdarg.h>
-
 #include <unicode/udata.h>
 #include <unicode/ures.h>
-#include <unicode/ustring.h>
+#include "l10n.h"
 
 // The ICU bundle name
 #define L10N_APPDATA "node"
@@ -65,24 +59,16 @@ bool l10n_initialize(const char * locale) {
   }
 }
 
-const char * l10n_sprintf(const char * key,
-                          const char * fallback,
-                          char * dest,
-                          int32_t *len, ...) {
+int32_t l10n_preflight(const char * key) {
+  int32_t len = 0;
   UErrorCode status = U_ZERO_ERROR;
-  char buffer[*len];
-  int32_t blen = sizeof(buffer);
-  const char * pattern = l10n_fetch(key,
-                                    fallback,
-                                    buffer,
-                                    &blen);
-  va_list args;
-  va_start(args, len);
-  // can't use u_vsnprintf because converters are turned off :-( .
-  // TODO: can we turn them on?
-  *len = vsnprintf(dest, *len, pattern, args);
-  va_end(args);
-  return dest;
+  ures_getUTF8StringByKey(bundle,
+                          key,
+                          NULL,
+                          &len,
+                          TRUE,
+                          &status);
+  return len;
 }
 
 const char * l10n_fetch(const char * key,
@@ -90,14 +76,14 @@ const char * l10n_fetch(const char * key,
                         char * dest,
                         int32_t *len) {
   UErrorCode status = U_ZERO_ERROR;
-  ures_getUTF8StringByKey(bundle,
+  const char * res = ures_getUTF8StringByKey(bundle,
                           key,
                           dest,
                           len,
-                          TRUE,
+                          FALSE,
                           &status);
   if (U_SUCCESS(status)) {
-    return dest;
+    return res;
   }
   return fallback; // return the fallback if resolution fails
 }

@@ -36,11 +36,11 @@
           {
             'toolsets': [ 'target' ],
             'dependencies': [
-              '<(icu_gyp_path):genrb#host',
-              '<(icu_gyp_path):genccode#host',
               '<(icu_gyp_path):icu_implementation#host',
               '<(icu_gyp_path):icu_uconfig',
-              'pkgdata#host'
+              '<(icu_gyp_path):genrb#host',
+              '<(icu_gyp_path):genccode#host',
+              '<(icu_gyp_path):icupkg#host'
             ],
             'include_dirs': [
               '../icu/source/common'
@@ -83,23 +83,6 @@
             ],
             'sources': [
               '<(SHARED_INTERMEDIATE_DIR)/node_dat.c'
-            ]
-          }
-        ]
-      ]
-    },
-    {
-      'target_name': 'pkgdata',
-      'type': 'executable',
-      'conditions': [
-        [
-          'v8_enable_i18n_support==1',
-          {
-            'toolsets': [ 'host' ],
-            'dependencies': [ '<(icu_gyp_path):icutools' ],
-            'sources': [
-              '<@(icu_src_pkgdata)',
-              '../../tools/icu/no-op.cc',
             ]
           }
         ]

@@ -26,18 +26,6 @@
 // If I18N Support is not enabled use simple sprintf fallback
 #define L10N(key, fallback) ({fallback;})
 
-#define L10Nn(key, fallback, len) ({fallback;})
-
-#define L10Nf(key, fallback, ...) ({        \
-  char buffer[200];                         \
-  sprintf(buffer, fallback, __VA_ARGS__);   \
-  buffer; })
-
-#define L10Nfn(key, fallback, len, ...) ({  \
-  char buffer[len];                         \
-  sprintf(buffer, fallback, __VA_ARGS__);   \
-  buffer; })
-
 #endif
 
 #ifndef SRC_BUNDLE_H_
@@ -54,8 +42,6 @@ class Bundle {
                          v8::Handle<v8::Context> context);
  private:
   static void Fetch(const v8::FunctionCallbackInfo<v8::Value>& args);
-
-  static void FetchN(const v8::FunctionCallbackInfo<v8::Value>& args);
 };
 
 } // namespace node

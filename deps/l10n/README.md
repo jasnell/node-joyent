@@ -14,11 +14,8 @@ When the --with-intl switch is on, the resources are compiled into a static
 library that is statically linked into Node. The next step will be to make
 it so that additional bundles can be specified at runtime.
 
-Resource bundles are located in the resources directory. Standard ICU format
-but keep it simple, we currently only support top level resources. Also, this
-assumes that most strings will be less than 200 characters fully expanded.
-There is an option to specify the buffer size but let's try to be reasonable
-with our error messages, shall we?
+Resource bundles are located in the resources directory. Standard ICU bundle
+format but keep it simple, we currently only support top level resources.
 
 Within the C/C++ code, use the macro:
 
@@ -27,20 +24,8 @@ Within the C/C++ code, use the macro:
 #include <stdio.h>
 
 ...
-
-// If KEY is found, prints the associated value, if not found,
-// prints the fallback
-printf("%s\n", L10N("KEY", "This is the fallback"));
-
-// If KEY is found, prints the associated value using printf to fill
-// in the blank. If key is not found, uses the fallback
-printf("%s\n", L10Nf("KEY", "This is the %s", "fallback"));
-
-// Same as L10Nf but uses a char[30] buffer instead of the default 200.
-printf("%s\n", L10Nfn("KEY", "This is the %s", 30, "fallback" ));
-
-// Same as L10N but uses a char[30] buffer instead of the default 200.
-printf("%s\n", L10Nn("KEY", "This is the fallback", 30));
+// If KEY is found, prints the associated value,
+// if not found, uses the fallback
+printf(L10N("KEY", "This is the fallback"));
+printf(L10N("KEY", "This is the %s"), "fallback");
 ```
-
-This is intended to be a first pass. I'm certain improvements can be made.

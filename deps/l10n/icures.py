@@ -63,14 +63,14 @@ if options.icu[-1] != '/':
     options.icu += '/'
 
 genrb = options.icu + 'genrb'
-pkgdata = options.icu + 'pkgdata'
+icupkg = options.icu + 'icupkg'
 
 if not os.path.isfile(genrb):
     print 'ICU Tool "%s" does not exist' % genrb
     sys.exit(1)
 
-if not os.path.isfile(pkgdata):
-    print 'ICU Tool "%s" does not exist' % pkgdata
+if not os.path.isfile(icupkg):
+    print 'ICU Tool "%s" does not exist' % icupkg
     sys.exit(1)
 
 def runcmd(tool, cmd, doContinue=False):
@@ -112,8 +112,8 @@ listfile = open(_listfile, 'w')
 listfile.write(" ".join([os.path.basename(f) for f in resfiles]))
 listfile.close()
 
-## Step 3, generate the dat file using pkgdata and the package list
-runcmd(pkgdata, '-p %s -m common packagefile.lst' % options.name)
+## Step 3, generate the dat file using icupkg and the package list
+runcmd(icupkg, '-a packagefile.lst new %s.dat' % options.name);
 
 ## All done with this tool at this point...
 os.chdir(cwd); # go back to original working directory

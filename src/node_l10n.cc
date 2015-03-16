@@ -22,9 +22,6 @@
 #include "node_l10n.h"
 
 #include "env.h"
-// #include "env-inl.h"
-// #include "util.h"
-// #include "util-inl.h"
 #include "node_wrap.h"
 #include "string_bytes.h"
 #include <stdio.h>
@@ -32,12 +29,6 @@
 
 namespace node {
 
-// using v8::Array;
-// using v8::Function;
-// using v8::FunctionTemplate;
-// using v8::Integer;
-// using v8::Local;
-// using v8::PropertyAttribute;
 using v8::String;
 using v8::HandleScope;
 using v8::FunctionCallbackInfo;
@@ -50,7 +41,6 @@ void Bundle::Initialize(Handle<Object> target,
                         Handle<Value> unused,
                         Handle<Context> context) {
   NODE_SET_METHOD(target, "fetch", Fetch);
-  NODE_SET_METHOD(target, "nfetch", FetchN);
 }
 
 // borrowed from v8
@@ -75,25 +65,6 @@ void Bundle::Fetch(const FunctionCallbackInfo<Value>& args) {
     v8::String::NewFromUtf8(
       args.GetIsolate(),
       L10N(ckey,cfallback)));
-}
-
-void Bundle::FetchN(const FunctionCallbackInfo<Value>& args) {
-  // we only pay attention to the first two args,
-  // they both need to be strings, these are passed
-  // off to the L10N macro. For javascript, we'll
-  // handle the actual printf formatting using the
-  // util.js format method
-  assert(args.Length() >= 3);
-  HandleScope handle_scope(args.GetIsolate());
-  v8::String::Utf8Value key(args[0]);
-  v8::String::Utf8Value fallback(args[1]);
-  int len = args[2]->Int32Value();
-  const char* ckey = ToCString(key);
-  const char* cfallback = ToCString(fallback);
-  args.GetReturnValue().Set(
-    v8::String::NewFromUtf8(
-      args.GetIsolate(),
-      L10Nn(ckey,cfallback,len)));
 }
 
 } // namespace node
