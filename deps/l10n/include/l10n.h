@@ -61,14 +61,14 @@ L10N_EXTERN const char * l10n_fetch(const char * key,
 
 /**
  * Lookup the key, return the value. Doesn't get much easier. If the key
- * is not found in the bundle, fallback is returned instead.
+ * is not found in the bundle, fallback is returned instead. The caller
+ * owns the string and must delete[] it when done lest horrible things.
  **/
-#define L10N(key, fallback) ({                                          \
-  char * dest;                                                          \
-  int32_t keylen = l10n_preflight(key);                                 \
-  dest = new char[keylen+1];                                            \
-  const char * res = l10n_fetch(key, fallback, dest, &keylen);          \
-  delete[] dest;                                                        \
+#define L10N(key, fallback) ({                                     \
+  char * dest;                                                     \
+  int32_t keylen = l10n_preflight(key);                            \
+  dest = new char[keylen+2];                                       \
+  const char * res = l10n_fetch(key, fallback, dest, &keylen);     \
   res; })
 
 #endif // L10N__H

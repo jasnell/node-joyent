@@ -35,28 +35,26 @@ parser.add_option("-l", "--endian",
 
 (options, args) = parser.parse_args()
 
-print(options)
-
 optVars = vars(options);
 
 for opt in ["dest", "name", "icu"]:
     if optVars[opt] is None:
-        print "Missing required option: %s" % opt
+        parser.error("Missing required option: %s" % opt)
         sys.exit(1)
 
 if options.endian not in ("big", "little", "host"):
-    print "Unknown endianess: %s" % options.endian
+    parser.error("Unknown endianess: %s" % options.endian)
     sys.exit(1)
 
 if options.endian == "host":
     options.endian = endian
 
 if not os.path.isdir(options.dest):
-    print "Destination is not a directory"
+    parser.error("Destination is not a directory")
     sys.exit(1)
 
 if not os.path.isdir(options.icu):
-    print "ICU Path is not a directory"
+    parser.error("ICU Path is not a directory")
     sys.exit(1)
 
 if options.icu[-1] != '/':
@@ -66,11 +64,11 @@ genrb = options.icu + 'genrb'
 icupkg = options.icu + 'icupkg'
 
 if not os.path.isfile(genrb):
-    print 'ICU Tool "%s" does not exist' % genrb
+    parser.error('ICU Tool "%s" does not exist' % genrb)
     sys.exit(1)
 
 if not os.path.isfile(icupkg):
-    print 'ICU Tool "%s" does not exist' % icupkg
+    parser.error('ICU Tool "%s" does not exist' % icupkg)
     sys.exit(1)
 
 def runcmd(tool, cmd, doContinue=False):

@@ -22,11 +22,35 @@
 #if defined(NODE_HAVE_I18N_SUPPORT)
 #include <l10n.h>
 #else
-
 // If I18N Support is not enabled use simple sprintf fallback
 #define L10N(key, fallback) ({fallback;})
-
 #endif
+
+#define L10N_PRINTF(key, fallback)                                 \
+  do {                                                             \
+    const char * res = L10N(key,fallback);                         \
+    printf(res);                                                   \
+    if (res != fallback) {delete[] res; }                          \
+  } while(0)
+
+#define L10N_PRINTFV(key, fallback, ...)                           \
+  do {                                                             \
+    const char * res = L10N(key,fallback);                         \
+    printf(res, __VA_ARGS__);                                      \
+    if (res != fallback) {delete[] res; }                          \
+  } while(0)
+
+#define L10N_ASPRINTF(key, target, fallback) ({                    \
+  const char * res = L10N(key,fallback);                           \
+  int ret = asprintf(&target, res);                                \
+  if (res != fallback) { delete[] res; }                           \
+  ret; })
+
+#define L10N_ASPRINTFV(key, target, fallback, ...) ({              \
+  const char * res = L10N(key,fallback);                           \
+  int ret = asprintf(&target, res, __VA_ARGS__);                   \
+  if (res != fallback) { delete[] res; }                           \
+  ret; })
 
 #ifndef SRC_BUNDLE_H_
 #define SRC_BUNDLE_H_

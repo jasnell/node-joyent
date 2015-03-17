@@ -17,15 +17,33 @@ it so that additional bundles can be specified at runtime.
 Resource bundles are located in the resources directory. Standard ICU bundle
 format but keep it simple, we currently only support top level resources.
 
-Within the C/C++ code, use the macro:
+Within the C/C++ code, use the macros:
 
 ```cc
 #include "node_l10n.h"
 #include <stdio.h>
 
-...
-// If KEY is found, prints the associated value,
-// if not found, uses the fallback
-printf(L10N("KEY", "This is the fallback"));
-printf(L10N("KEY", "This is the %s"), "fallback");
+L10N_PRINTF("TEST", "This is the fallback");
+L10N_PRINTFV("TEST2", "Testing %s %d", "a", 1);
+
+// L10N_ASPRINTFV returns an allocated string expanded using ASPRINTF...
+// You have to free it when done.
+char * target;
+if (L10N_ASPRINTFV("TEST2", target, "Testing %s %d", "a", 1) > -1) {
+  printf("%s", target);
+  free(target);
+}
+
+// You can use L10N directly but you have to free when done
+// (only if fallback isn't used)
+const char * fallback = "This is the fallback";
+const char * msg = L10N("TEST",fallback);
+if (msg != fallback) { delete[] msg; }
+```
+
+In the JS code, use the _bundle.js
+```javascript
+var bundle = require('_bundle');
+console.log(bundle("TEST", "This is the fallback"));
+console.log(bundle("TEST2", "Fallback %s %d", "a", 1));
 ```

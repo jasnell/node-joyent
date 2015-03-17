@@ -59,12 +59,19 @@ void Bundle::Fetch(const FunctionCallbackInfo<Value>& args) {
   HandleScope handle_scope(args.GetIsolate());
   v8::String::Utf8Value key(args[0]);
   v8::String::Utf8Value fallback(args[1]);
-  const char* ckey = ToCString(key);
-  const char* cfallback = ToCString(fallback);
+  const char * ckey = ToCString(key);
+  const char * cfallback = ToCString(fallback);
+  const char * msg = L10N(ckey,cfallback);
+
   args.GetReturnValue().Set(
     v8::String::NewFromUtf8(
-      args.GetIsolate(),
-      L10N(ckey,cfallback)));
+      args.GetIsolate(), msg));
+
+#if defined(NODE_HAVE_I18N_SUPPORT)
+  if (msg != cfallback) {
+    delete[] msg;
+  }
+#endif
 }
 
 } // namespace node
