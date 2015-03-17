@@ -66,8 +66,8 @@ L10N_EXTERN const char * l10n_fetch(const char * key,
  **/
 #define L10N(key, fallback) ({                                     \
   char * dest;                                                     \
-  int32_t keylen = l10n_preflight(key);                            \
-  dest = new char[keylen+2];                                       \
+  int32_t keylen = l10n_preflight(key) + 1;                        \
+  dest = new char[keylen];                                         \
   const char * res = l10n_fetch(key, fallback, dest, &keylen);     \
   res; })
 
