@@ -38,7 +38,6 @@
 
 #if defined(NODE_HAVE_I18N_SUPPORT)
 #include "node_i18n.h"
-#include "l10n.h" // need to include so we can initialize on startup
 #endif
 
 #if defined HAVE_DTRACE || defined HAVE_ETW
@@ -2976,10 +2975,7 @@ static void ParseArgs(int* argc,
   const char** new_v8_argv = new const char*[nargs];
   const char** new_argv = new const char*[nargs];
 
-  #if defined(NODE_HAVE_I18N_SUPPORT)
-  // initialize the resource bundle only if i18n support is enabled
-  l10n_initialize(NULL); // use the default locale...
-  #endif
+  L10N_INIT(NULL);
 
   for (unsigned int i = 0; i < nargs; ++i) {
     new_exec_argv[i] = NULL;
