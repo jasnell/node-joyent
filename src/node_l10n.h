@@ -24,37 +24,66 @@
 #define L10N_INIT(locale) do {l10n_initialize(locale);} while(0)
 #else
 
-// If I18N Support is not enabled use simple sprintf fallback
+// If I18N Support is not enabled use simple fallback
 #define L10N(key, fallback) ({fallback;})
 #define L10N_INIT(locale) do {} while(0)
 
 #endif
 
-#define L10N_PRINTF(key, fallback)                                 \
+#define L10N_PRINTF(key, fallback, args...)                        \
   do {                                                             \
     const char * res = L10N(key,fallback);                         \
-    printf(res);                                                   \
+    printf(res, ##args);                                           \
     if (res != fallback) {delete[] res; }                          \
   } while(0)
 
-#define L10N_PRINTFV(key, fallback, ...)                           \
-  do {                                                             \
-    const char * res = L10N(key,fallback);                         \
-    printf(res, __VA_ARGS__);                                      \
-    if (res != fallback) {delete[] res; }                          \
-  } while(0)
-
-#define L10N_ASPRINTF(key, target, fallback) ({                    \
+#define L10N_ASPRINTF(key, target, fallback, args...) ({           \
   const char * res = L10N(key,fallback);                           \
-  int ret = asprintf(&target, res);                                \
+  int ret = asprintf(&target, res, ##args);                        \
   if (res != fallback) { delete[] res; }                           \
   ret; })
 
-#define L10N_ASPRINTFV(key, target, fallback, ...) ({              \
-  const char * res = L10N(key,fallback);                           \
-  int ret = asprintf(&target, res, __VA_ARGS__);                   \
-  if (res != fallback) { delete[] res; }                           \
-  ret; })
+#define THROWERR_L10N(fun, env, key, fallback, args...)                       \
+  do {                                                                        \
+    char * errmsg;                                                            \
+    if (L10N_ASPRINTFV(key, errmsg, fallback, ##args) > -1) {                 \
+      fun(errmsg);                                                            \
+      free(errmsg);                                                           \
+    } else {                                                                  \
+      env->ThrowTypeError(fallback);                                          \
+    }                                                                         \
+  }                                                                           \
+  while (0)
+
+#define THROWERRI_L10N(fun, env, key, fallback, args...)                      \
+  do {                                                                        \
+    char * errmsg;                                                            \
+    if (L10N_ASPRINTF(key, errmsg, fallback, ##args) > -1) {                  \
+      fun(isolate, errmsg);                                                   \
+      free(errmsg);                                                           \
+    } else {                                                                  \
+      env->ThrowTypeError(fallback);                                          \
+    }                                                                         \
+  }                                                                           \
+  while (0)
+
+#define THROWTYPEERROR_L10N(env, key, fallback, args...) \
+  THROWERR_L10N(env->ThrowTypeError, env, key, fallback, ##args)
+
+#define THROWRANGEERROR_L10N(env, key, fallback, args...) \
+  THROWERR_L10N(env->ThrowRangeError, env, key, fallback, ##args)
+
+#define THROWERROR_L10N(env, key, fallback, args...) \
+  THROWERR_L10N(env->ThrowError, env, key, fallback, ##args)
+
+#define THROWTYPEERRORI_L10N(env, isolate, key, fallback, args...) \
+  THROWERRI_L10N(env->ThrowTypeError, env, isolate, key, fallback, ##args)
+
+#define THROWRANGEERRORI_L10N(env, isolate, key, fallback, args...) \
+  THROWERRI_L10N(env->ThrowRangeError, env, isolate, key, fallback, ##args)
+
+#define THROWERRORI_L10N(env, isolate, key, fallback, args...) \
+  THROWERRI_L10N(env->ThrowError, env, isolate, key, fallback, ##args)
 
 #ifndef SRC_BUNDLE_H_
 #define SRC_BUNDLE_H_
