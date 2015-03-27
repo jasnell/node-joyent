@@ -63,6 +63,10 @@ if options.icu[-1] != os.path.sep:
 genrb = options.icu + 'genrb'
 icupkg = options.icu + 'icupkg'
 
+if sys.platform is 'win32':
+    genrb += '.exe'
+    icupkg += '.exe'
+
 if not os.path.isfile(genrb):
     parser.error('ICU Tool "%s" does not exist' % genrb)
     sys.exit(1)
