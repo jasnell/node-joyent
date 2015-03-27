@@ -63,7 +63,7 @@ if options.icu[-1] != os.path.sep:
 genrb = options.icu + 'genrb'
 icupkg = options.icu + 'icupkg'
 
-if sys.platform is 'win32':
+if sys.platform.startswith('win32'):
     genrb += '.exe'
     icupkg += '.exe'
 
@@ -83,9 +83,9 @@ def runcmd(tool, cmd, doContinue=False):
         sys.exit(1)
     return rc
 
-resfiles = glob.glob("%s/*.res" % options.dest)
+resfiles = glob.glob("%s%s*.res" % (options.dest, os.path.sep))
 _listfile = os.path.join(options.dest, 'packagefile.lst')
-datfile = "%s/%s.dat" % (options.dest, options.name)
+datfile = "%s%s%s.dat" % (options.dest, os.path.sep, options.name)
 
 def clean():
     for f in resfiles:
@@ -100,9 +100,9 @@ def clean():
 clean()
 
 ## Step 1, compile the txt files in res files
-runcmd(genrb, "-e utf8 -d %s resources/*.txt" % options.dest)
+runcmd(genrb, "-e utf8 -d %s resources%s*.txt" % (options.dest, os.path.sep))
 
-resfiles = [os.path.relpath(f) for f in glob.glob("%s/*.res" % options.dest)]
+resfiles = [os.path.relpath(f) for f in glob.glob("%s%s*.res" % (options.dest, os.path.sep))]
 
 # pkgdata requires relative paths... it's annoying but necessary
 # for us to change into the dest directory to work
