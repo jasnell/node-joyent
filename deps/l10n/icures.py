@@ -57,8 +57,8 @@ if not os.path.isdir(options.icu):
     parser.error("ICU Path is not a directory")
     sys.exit(1)
 
-if options.icu[-1] != '/':
-    options.icu += '/'
+if options.icu[-1] != os.path.sep:
+    options.icu += os.path.sep
 
 genrb = options.icu + 'genrb'
 icupkg = options.icu + 'icupkg'
