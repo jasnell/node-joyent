@@ -42,9 +42,6 @@
               '<(icu_gyp_path):genccode#host',
               '<(icu_gyp_path):icupkg#host'
             ],
-            'include_dirs': [
-              '../icu/source/common'
-            ],
             'actions': [
               {
                 'action_name': 'icures',
@@ -69,20 +66,54 @@
                 'inputs': [
                   '<(SHARED_INTERMEDIATE_DIR)/noderestmp/node.dat'
                 ],
-                'outputs': [
-                  '<(SHARED_INTERMEDIATE_DIR)/node_dat.c'
-                ],
-                'action': [
-                  '<(PRODUCT_DIR)/genccode',
-                  '-e', 'node',
-                  '-d', '<(SHARED_INTERMEDIATE_DIR)',
-                  '-f', 'node_dat',
-                  '<@(_inputs)'
+                'conditions': [
+                  [
+                    'OS != "win"',
+                    {
+                      'outputs': [
+                        '<(SHARED_INTERMEDIATE_DIR)/node_dat.c'
+                      ],
+                      'action': [
+                        '<(PRODUCT_DIR)/genccode',
+                        '-e', 'node',
+                        '-d', '<(SHARED_INTERMEDIATE_DIR)',
+                        '-f', 'node_dat',
+                        '<@(_inputs)'
+                      ]
+                    },
+                    {
+                      'outputs': [
+                        '<(SHARED_INTERMEDIATE_DIR)/node_dat.obj'
+                      ],
+                      'action': [
+                        '<(PRODUCT_DIR)/genccode',
+                        '-o',
+                        '-d', '<(SHARED_INTERMEDIATE_DIR)',
+                        '-n', 'node',
+                        '-e', 'node',
+                        '<@(_inputs)'
+                      ]
+                    }
+                  ]
                 ]
               }
             ],
-            'sources': [
-              '<(SHARED_INTERMEDIATE_DIR)/node_dat.c'
+            'conditions': [
+              [ 'OS == "win"',
+                {
+                  'sources': [
+                    '<(SHARED_INTERMEDIATE_DIR)/node_dat.obj'
+                  ]
+                },
+                {
+                  'include_dirs': [
+                    '../icu/source/common'
+                  ],
+                  'sources': [
+                    '<(SHARED_INTERMEDIATE_DIR)/node_dat.c'
+                  ]
+                }
+              ]
             ]
           }
         ]
