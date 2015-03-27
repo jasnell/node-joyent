@@ -90,3 +90,12 @@ const char * l10n_fetch(const char * key,
   }
   return fallback; // return the fallback if resolution fails
 }
+
+const char * l10n_fetch(const char * key,
+                        const char * fallback) {
+  char * dest;
+  int32_t keylen = l10n_preflight(key) + 1;
+  dest = new char[keylen];
+  const char * res = l10n_fetch(key, fallback, dest, &keylen);
+  return res; // caller must free!
+}

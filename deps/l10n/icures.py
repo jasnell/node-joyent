@@ -53,6 +53,9 @@ if not os.path.isdir(options.dest):
     parser.error("Destination is not a directory")
     sys.exit(1)
 
+if options.icu[-1] is '"':
+    options.icu = options.icu[:-1]
+
 if not os.path.isdir(options.icu):
     parser.error("ICU Path is not a directory")
     sys.exit(1)
@@ -100,7 +103,12 @@ def clean():
 clean()
 
 ## Step 1, compile the txt files in res files
-runcmd(genrb, "-e utf8 -d %s resources%s*.txt" % (options.dest, os.path.sep))
+
+if sys.platform.startswith('win32'):
+  srcfiles = glob.glob('resources/*.txt')
+  runcmd(genrb, "-e utf8 -d %s %s" % (options.dest, " ".join(srcfiles)))
+else:
+  runcmd(genrb, "-e utf8 -d %s resources%s*.txt" % (options.dest, os.path.sep))
 
 resfiles = [os.path.relpath(f) for f in glob.glob("%s%s*.res" % (options.dest, os.path.sep))]
 

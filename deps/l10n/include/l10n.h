@@ -64,11 +64,10 @@ L10N_EXTERN const char * l10n_fetch(const char * key,
  * is not found in the bundle, fallback is returned instead. The caller
  * owns the string and must delete[] it when done lest horrible things.
  **/
-#define L10N(key, fallback) ({                                     \
-  char * dest;                                                     \
-  int32_t keylen = l10n_preflight(key) + 1;                        \
-  dest = new char[keylen];                                         \
-  const char * res = l10n_fetch(key, fallback, dest, &keylen);     \
-  res; })
+L10N_EXTERN const char * l10n_fetch(const char * key,
+                                    const char * fallback);
+
+#define L10N(key, fallback) l10n_fetch(key, fallback)
+
 
 #endif // L10N__H
