@@ -40,7 +40,6 @@
  *    See:  http://bugs.icu-project.org/trac/ticket/10924
  */
 
-
 #include "node_i18n.h"
 
 #if defined(NODE_HAVE_I18N_SUPPORT)

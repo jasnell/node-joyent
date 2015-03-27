@@ -21,12 +21,14 @@
 
 #if defined(NODE_HAVE_I18N_SUPPORT)
 #include <l10n.h>
-#define L10N_INIT(locale) do {l10n_initialize(locale);} while(0)
+#define L10N_INIT(locale, icu_data_dir)                            \
+  do {l10n_initialize(locale, icu_data_dir);} while(0)
+
 #else
 
 // If I18N Support is not enabled use simple fallback
 #define L10N(key, fallback) ({fallback;})
-#define L10N_INIT(locale) do {} while(0)
+#define L10N_INIT(locale, icu_data_dir) do {} while(0)
 
 #endif
 

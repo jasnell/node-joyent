@@ -37,11 +37,13 @@ void l10n_cleanup() {
   ures_close(bundle);
 }
 
-bool l10n_initialize(const char * locale) {
-
-  _locale = locale;
+bool l10n_initialize(const char * locale,
+                     const char * icu_data_dir) {
   UErrorCode status = U_ZERO_ERROR;
-  udata_setAppData("node", &node_dat, &status);
+  _locale = locale;
+  if (!icu_data_dir) {
+    udata_setAppData("node", &node_dat, &status);
+  }
   if (U_FAILURE(status)) {
     return FALSE;
   } else {
@@ -57,6 +59,7 @@ bool l10n_initialize(const char * locale) {
       return FALSE;
     }
   }
+
 }
 
 int32_t l10n_preflight(const char * key) {

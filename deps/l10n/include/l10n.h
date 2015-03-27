@@ -44,7 +44,7 @@
  * Initialize the resource bundle. This will register an atexit handler
  * to deal with the cleanup in normal termination
  **/
-L10N_EXTERN bool l10n_initialize(const char * locale);
+L10N_EXTERN bool l10n_initialize(const char * locale, const char * icu_data_dir);
 
 /**
  * Preflight to get the minimum buffer allocation size we need.
